@@ -31,6 +31,7 @@
  * @package Domain
  * @subpackage Import\MetaData
  * @author Michael Knoll <mimi@kaktusteam.de>
+ * @author Daniel Lienert <daniel@lienert.cc>
  */
 class Tx_Yag_Domain_Import_MetaData_ItemMetaFactory {
 
@@ -71,7 +72,18 @@ class Tx_Yag_Domain_Import_MetaData_ItemMetaFactory {
 		$itemMeta->setLens(self::getXmpValueByKey($xmpData, 'aux\:Lens'));
 
 		$itemMeta->setShutterSpeed($exifData['ShutterSpeedValue']);
-		
+
+		/**
+		 * @signalSlot to alter the itemMetaObject or process the imported meta data
+		 */
+		t3lib_div::makeInstance('Tx_Extbase_Object_Manager')->get('Tx_Yag_Utility_SignalSlot')
+			->dispatch(__CLASS__, 'afterMetaDataCreation', array(
+				'exifData' => &$exifData,
+				'iptcData' => &$iptcData,
+				'xmpData' => &$xmpData,
+				'itemMeta' => $itemMeta
+			));
+
 		return $itemMeta;
 	}
 
