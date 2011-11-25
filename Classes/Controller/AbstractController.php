@@ -125,9 +125,9 @@ abstract class Tx_Yag_Controller_AbstractController extends Tx_Extbase_MVC_Contr
 		$this->lifecycleManager->registerAndUpdateStateOnRegisteredObject($this->objectManager->get('Tx_Yag_PageCache_PageCacheManager'));
 
 		$this->preInitializeAction();
-		$this->initializeFeUser();
-		$this->initAccessControllService();
-		$this->doRbacCheck();
+		//$this->initializeFeUser();
+		//$this->initAccessControllService();
+		//$this->doRbacCheck();
 		$this->postInitializeAction();
 	}
     
@@ -407,22 +407,23 @@ abstract class Tx_Yag_Controller_AbstractController extends Tx_Extbase_MVC_Contr
 	 * @throws Exception
 	 */
 	protected function setCustomPathsInView(Tx_Extbase_MVC_View_ViewInterface $view) {
-		
+
 		// We can overwrite a template via TS using plugin.yag.settings.controller.<ControllerName>.<actionName>.template
-		if($this->configurationBuilder) {
+		if ($this->configurationBuilder) {
 			$templatePathAndFilename = $this->configurationBuilder->buildThemeConfiguration()->getTemplate($this->request->getControllerName(), $this->request->getControllerActionName());
+
 			$this->objectManager->get('Tx_Yag_Utility_HeaderInclusion')->includeThemeDefinedHeader($this->configurationBuilder->buildThemeConfiguration());
 		}
 
-		if(!$templatePathAndFilename) $templatePathAndFilename = $this->settings['controller'][$this->request->getControllerName()][$this->request->getControllerActionName()]['template'];
-	
+		if (!$templatePathAndFilename) $templatePathAndFilename = $this->settings['controller'][$this->request->getControllerName()][$this->request->getControllerActionName()]['template'];
+
 		if (isset($templatePathAndFilename) && strlen($templatePathAndFilename) > 0) {
 			if (file_exists(t3lib_div::getFileAbsFileName($templatePathAndFilename))) {
-                $view->setTemplatePathAndFilename(t3lib_div::getFileAbsFileName($templatePathAndFilename));
+				$view->setTemplatePathAndFilename(t3lib_div::getFileAbsFileName($templatePathAndFilename));
 			} else {
 				throw new Exception('Given template path and filename could not be found or resolved: ' . $templatePathAndFilename . ' 1284655109');
 			}
-        }		
+		}
 	}
 	
 	

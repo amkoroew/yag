@@ -1,0 +1,40 @@
+{namespace extlist=Tx_PtExtlist_ViewHelpers}
+{namespace yag=Tx_Yag_ViewHelpers}
+        
+<yag:filterBox identifier="filterBox1">
+    <f:form id="tx-ptextlist-filterbox-form-{filterbox.filterBoxIdentifier}" action="submitFilter" pageUid="50" method="POST">
+
+        <f:if condition="{filtersDontValidate}">
+            <div class="error">
+                <f:translate key="filterBox.errorInFilter" default="Errors in Filter" />
+            </div>
+        </f:if>
+
+        <ul class="tx-ptextlist-filters">
+            <f:for each="{filterbox}" as="filter">
+                <f:if condition="{filter.filterConfig.visible}">
+                    <li class="tx-ptextlist-filter pt-extlist-filter-{filter.filterIdentifier}">
+                        <f:render partial="{filter.filterConfig.partialPath}" arguments="{filter : filter}" />
+                    </li>
+                </f:if>
+            </f:for>
+        </ul>
+
+        <div class="outer-wrapper tx-ptextlist-filterboxcontrols">
+            <div class="outer-field-wrapper">
+                <div class="field-wrapper type-button">
+                    <f:if condition="{filterbox.filterboxConfiguration.showSubmit}">
+                        <f:form.submit value="{f:translate(key:'filterBox.submitFilters', default:'Submit Filters')}"/>
+                    </f:if>
+                    <f:if condition="{filterbox.filterboxConfiguration.showReset}">
+                        <f:link.action action="reset" arguments="{filterboxIdentifier: filterbox.filterboxIdentifier}" class="reset">
+                            <span>
+                                <f:translate key="filterBox.resetFilters" default="Reset filters" />
+                            </span>
+                        </f:link.action>
+                    </f:if>
+                </div>
+            </div>
+        </div>
+    </f:form>
+</yag:filterBox>
