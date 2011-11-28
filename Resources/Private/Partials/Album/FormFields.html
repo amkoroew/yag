@@ -1,4 +1,5 @@
 {namespace yag=Tx_Yag_ViewHelpers}
+{namespace ptx=Tx_PtExtbase_ViewHelpers}
 
 <div class="outer-wrapper">
 	<label for="name" >
@@ -53,6 +54,18 @@
 	<div class="outer-field-wrapper">
 		<div class="field-wrapper type-text">
 			 <f:form.checkbox id="hide" property="hide" value="1" checked="{album.hide}" />
+		</div>
+	</div>
+</div>
+
+
+<div class="outer-wrapper">
+	<label for="groups" >
+        <f:translate key="tx_yag_domain_model_album.groups" />
+    </label>
+	<div class="outer-field-wrapper">
+		<div class="field-wrapper type-text">
+            <ptx:Form.UserGroupSelector />
 		</div>
 	</div>
 </div>
