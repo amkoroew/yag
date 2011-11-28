@@ -7,7 +7,7 @@
 	</label>
 	<div class="outer-field-wrapper">
 		<div class="field-wrapper type-text">
-			 <f:form.textfield property="name" />
+			 <f:form.textfield property="name" id="name"/>
 		</div>
 	</div>
 </div>
@@ -48,16 +48,13 @@
 </div>
 
 <div class="outer-wrapper">
-	<label for="hide" >
-        <f:translate key="tx_yag_domain_model_album.hide" />
-    </label>
-	<div class="outer-field-wrapper">
-		<div class="field-wrapper type-text">
-			 <f:form.checkbox id="hide" property="hide" value="1" checked="{album.hide}" />
-		</div>
-	</div>
+    <div class="field-wrapper type-checkbox">
+        <f:form.checkbox id="hide" property="hide" value="1" checked="{album.hide}" />
+        <label for="hide" >
+            <f:translate key="tx_yag_domain_model_album.hide" />
+        </label>
+    </div>
 </div>
-
 
 <div class="outer-wrapper">
 	<label for="groups" >
