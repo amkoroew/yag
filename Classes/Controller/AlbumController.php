@@ -125,6 +125,7 @@ class Tx_Yag_Controller_AlbumController extends Tx_Yag_Controller_AbstractContro
 	}
 
 
+
 	/**
 	 * Creates a new album
 	 *
@@ -143,6 +144,7 @@ class Tx_Yag_Controller_AlbumController extends Tx_Yag_Controller_AbstractContro
 		$this->view->assign('selectedGallery', $gallery);
 		$this->view->assign('newAlbum', $newAlbum);
 	}
+
 
 
 	/**
