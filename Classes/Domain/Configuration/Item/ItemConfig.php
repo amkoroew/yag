@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>
 *  			Michael Knoll <mimi@kaktusteam.de>
 *  			
 *  All rights reserved
@@ -32,7 +32,7 @@
  * @author Daniel Lienert <daniel@lienert.cc>
  * @author Michael Knoll <mimi@kaktusteam.de>
  */
-class Tx_Yag_Domain_Configuration_Item_ItemConfig extends Tx_PtExtlist_Domain_Configuration_AbstractConfiguration {
+class Tx_Yag_Domain_Configuration_Item_ItemConfig extends Tx_PtExtbase_Configuration_AbstractConfiguration {
 
 	/**
 	 * Holds partial name used for rendering item meta information

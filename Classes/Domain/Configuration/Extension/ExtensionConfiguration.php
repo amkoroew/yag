@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <knoll@punkt.de>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktsuteam.de>
 *  All rights reserved
 *
 *
@@ -29,9 +29,9 @@
  * @package Domain
  * @subpackage Configuration
  * @author Daniel Lienert <daniel@lienert.cc>
- * @author Michael Knoll <knoll@punkt.de>
+ * @author Michael Knoll <mimi@kaktsuteam.de>
  */
-class Tx_Yag_Domain_Configuration_Extension_ExtensionConfiguration extends Tx_PtExtlist_Domain_Configuration_AbstractConfiguration {
+class Tx_Yag_Domain_Configuration_Extension_ExtensionConfiguration extends Tx_PtExtbase_Configuration_AbstractConfiguration {
 
 	/**
 	 * Holds root path of yag hash filesystem to where all yag item files go

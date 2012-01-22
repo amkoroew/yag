@@ -15,6 +15,7 @@ config.tx_extbase {
         storagePid = 0
         enableAutomaticCacheClearing = 1
         updateReferenceIndex = 0
+        classes > 
         classes {
             Tx_Extbase_Domain_Model_FrontendUser {
                 mapping {
@@ -95,10 +96,6 @@ YAGXML_ItemList {
 # Some miscellaneous settings
 #
 plugin.tx_yag.settings {
-    
-	crawler {
-        fileTypes = jpg,jpeg,JPG,JPEG
-    }
 
 	# Set access denied controller and action
     # This is used, whenever access was not granted

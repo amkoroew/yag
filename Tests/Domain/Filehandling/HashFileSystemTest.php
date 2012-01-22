@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <knoll@punkt.de>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktsuteam.de>
 *  All rights reserved
 *
 *
@@ -26,9 +26,9 @@
 /**
  * Testcase for hash filesystem
  *
- * @package yag
- * @subpackage Tests\Domain\FileSystem
- * @author Michael Knoll <knoll@punkt.de>
+ * @package Tests
+ * @subpackage Domain\FileSystem
+ * @author Michael Knoll <mimi@kaktsuteam.de>
  */
 class Tx_Yag_Tests_Domain_FileSystem_HashFileSystemTest extends Tx_Yag_Tests_BaseTestCase {
 	
@@ -45,7 +45,7 @@ class Tx_Yag_Tests_Domain_FileSystem_HashFileSystemTest extends Tx_Yag_Tests_Bas
 	 * Sets up testcase
 	 */
 	public function setUp() {
-		$this->fixture = new Tx_Yag_Domain_FileSystem_HashFileSystem(getcwd());
+		$this->fixture = new Tx_Yag_Domain_FileSystem_HashFileSystem('fileadmin');
 	}
 	
 	
@@ -88,7 +88,7 @@ class Tx_Yag_Tests_Domain_FileSystem_HashFileSystemTest extends Tx_Yag_Tests_Bas
 	 * @test
 	 */
 	public function getAbsolutePathByIdReturnsCorrectPathForGivenId() {
-		$this->assertEquals($this->fixture->getAbsolutePathById(1), getcwd() . '/00');
+		$this->assertEquals(PATH_site . $this->fixture->getAbsolutePathById(1), PATH_site . 'fileadmin/00');
 	}
      
 }

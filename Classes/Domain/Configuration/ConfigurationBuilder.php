@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktusteam.de>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktusteam.de>
 *  All rights reserved
 *
 *
@@ -32,7 +32,7 @@
  * @author Daniel Lienert <daniel@lienert.cc>
  * @author Michael Knoll <mimi@kaktusteam.de>
  */
-class Tx_Yag_Domain_Configuration_ConfigurationBuilder extends Tx_PtExtlist_Domain_Configuration_AbstractConfigurationBuilder {
+class Tx_Yag_Domain_Configuration_ConfigurationBuilder extends Tx_PtExtbase_Configuration_AbstractConfigurationBuilder {
 	
 
 	/**
@@ -53,11 +53,15 @@ class Tx_Yag_Domain_Configuration_ConfigurationBuilder extends Tx_PtExtlist_Doma
 				array('factory' => 'Tx_Yag_Domain_Configuration_GalleryList_GalleryListConfigFactory'),
 		'imageProcessor' => 
 		    	array('factory' => 'Tx_Yag_Domain_Configuration_ImageProcessing_ImageProcessorConfigurationFactory'),
+		'importer' =>
+		    	array('factory' => 'Tx_Yag_Domain_Configuration_Import_ImporterConfigurationFactory'),		    	
 		'extension' =>
 		    	array('factory' => 'Tx_Yag_Domain_Configuration_Extension_ExtensionConfigurationFactory'),
 		'theme' =>
 		    	array('factory' => 'Tx_Yag_Domain_Configuration_Theme_ThemeConfigurationFactory',
 		    		  'tsKey' => NULL,),
+		'themes' =>
+				array('factory' => 'Tx_Yag_Domain_Configuration_Theme_ThemeConfigCollectionFactory'),
 		'extlist' =>
 		    	array('factory' => 'Tx_Yag_Domain_Configuration_Extlist_ExtlistConfigurationFactory'),
 		'sysImages' =>
@@ -121,6 +125,10 @@ class Tx_Yag_Domain_Configuration_ConfigurationBuilder extends Tx_PtExtlist_Doma
 		
 		$this->theme = $theme;
 		$this->mergeAndSetThemeConfiguration();
+
+		$this->mergeAndSetFlexFormConfiguration('galleryList');
+		$this->mergeAndSetFlexFormConfiguration('albumList');
+		$this->mergeAndSetFlexFormConfiguration('itemList');
 	}
 	
 	
@@ -176,7 +184,37 @@ class Tx_Yag_Domain_Configuration_ConfigurationBuilder extends Tx_PtExtlist_Doma
 	        $this->settings = $mergedSettings;
 		}	
 	}
-	
+
+
+	/**
+	 * Set Configuration from flexform
+	 *
+	 * Sorting:
+	 * There can be a special sorting command 'Use theme configuration' which
+    * means that we do not want to change sorting by flexform but use sorting
+    * from from theme.
+	 *
+	 * @param $listType string / either galleryList, albumList or itemList
+	 * @return void
+	 */
+	protected function mergeAndSetFlexFormConfiguration($listType) {
+		$configFromFlexForm = $this->origSettings['context'][$listType];
+
+		$sortingSettings = $configFromFlexForm['sorting'];
+		if (is_array($sortingSettings)
+			 && array_key_exists('field', $sortingSettings)
+			 && $sortingSettings['field'] != ''
+			 && $sortingSettings['field'] != 'none'
+		) {
+			$this->settings['extlist'][$listType]['backendConfig']['sorting'] = $sortingSettings['field'] . ' ' . $sortingSettings['direction'];
+		}
+
+		$itemsPerPage = (int) $configFromFlexForm['itemsPerPage'];
+		if($itemsPerPage > 0) {
+			$this->settings[$listType]['itemsPerPage'] = $itemsPerPage;
+		}
+	}
+
 	
 	
 	/**
@@ -191,10 +229,19 @@ class Tx_Yag_Domain_Configuration_ConfigurationBuilder extends Tx_PtExtlist_Doma
 	
 	
 	/**
+	 * @param null $key
 	 * @return array
 	 */
-	public function getOrigSettings() {
-		return $this->origSettings;
+	public function getOrigSettings($key = null) {
+		if (!$key) {
+			return $this->origSettings;
+		} else {
+			if (array_key_exists($key, $this->origSettings)) {
+				return $this->origSettings[$key];
+			} else {
+				return array();
+			}
+		}
 	}
 	
 	
@@ -206,6 +253,17 @@ class Tx_Yag_Domain_Configuration_ConfigurationBuilder extends Tx_PtExtlist_Doma
 	 */
 	public function buildCrawlerConfiguration() {
 		return $this->buildConfigurationGeneric('crawler');
+	}
+	
+	
+	
+	/**
+	 * Returns an instance of importer configuration
+	 *
+	 * @return Tx_Yag_Domain_Configuration_Import_ImporterConfiguration
+	 */
+	public function buildImporterConfiguration() {
+		return $this->buildConfigurationGeneric('importer');
 	}
 	
 	
@@ -326,10 +384,48 @@ class Tx_Yag_Domain_Configuration_ConfigurationBuilder extends Tx_PtExtlist_Doma
 	public function buildFrontendLibConfiguration() {
 		return $this->buildConfigurationGeneric('frontendLib');
 	}
-	
+
+
+
+	/**
+	 * @return Tx_Yag_Domain_Configuration_Theme_ThemeConfigCollection
+	 */
+	public function buildThemeConfigurationCollection() {
+		return $this->buildConfigurationGeneric('themes');
+	}
+
+
+
+	/**
+	 *
+	 * @param null $key settings key
+	 * @return array
+	 */
+	public function getJSCompliantSettings($key = NULL) {
+
+		$settings = $this->getSettings($key);
+
+		foreach($settings as &$value) {
+
+			if(is_numeric($value)) {
+				if((int) $value == $value) {
+					$value = (int) $value;
+				} else {
+					$value = (float) $value;
+				}
+			}
+
+			if(trim($value) === 'true') $value = TRUE;
+			if(trim($value) === 'false') $value = false;
+		}
+
+		return $settings;
+	}
+
 	
 	/**
 	 * Return currently used theme
+	 * @return string
 	 */
 	public function getTheme() {
 		return $this->theme;

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <knoll@punkt.de>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktsuteam.de>
 *  All rights reserved
 *
 *
@@ -28,7 +28,7 @@
  *
  * @package Domain
  * @subpackage Import
- * @author Michael Knoll <knoll@punkt.de>
+ * @author Michael Knoll <mimi@kaktsuteam.de>
  */
 class Tx_Yag_Domain_Import_FileCrawler {
 	
@@ -72,7 +72,7 @@ class Tx_Yag_Domain_Import_FileCrawler {
 					    $entries[] = $directory . $dirEntry;
 					}	
 				} elseif (is_dir($directory.$dirEntry) && $crawlRecursive) {
-					$this->getFilesForGivenDirectory($directory.$dirEntry, true, $entries);
+					$this->getFilesForGivenDirectory($directory.$dirEntry, TRUE, $entries);
 				}
 			}
 		}
@@ -104,7 +104,7 @@ class Tx_Yag_Domain_Import_FileCrawler {
 	 */
 	protected function fileMatchesFilePattern($fileName) {
 		foreach (explode(',',$this->configuration->getFileTypes()) as $filePattern) {
-			if (substr_compare($fileName, $filePattern, -strlen($filePattern), strlen($filePattern)) == 0) return true;
+			if (substr_compare(strtolower($fileName), $filePattern, -strlen($filePattern), strlen($filePattern)) == 0) return TRUE;
 		}
 		return false;
 	}

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktusteam.de>
+*  (c) 2010-2011-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktusteam.de>
 *  All rights reserved
 *
 *
@@ -144,7 +144,7 @@ class Tx_Yag_Controller_AjaxController extends Tx_Yag_Controller_AbstractControl
      * @rbacAction edit
 	 */
 	public function updateItemTitleAction(Tx_Yag_Domain_Model_Item $item, $itemTitle) {
-		$item->setTitle($itemTitle);
+		$item->setTitle(utf8_encode($itemTitle));
 		
 		$this->itemRepository->update($item);
 		
@@ -180,7 +180,7 @@ class Tx_Yag_Controller_AjaxController extends Tx_Yag_Controller_AbstractControl
      * @rbacAction update
 	 */
 	public function updateItemDescriptionAction($item, $itemDescription) {
-		$item->setDescription($itemDescription);
+		$item->setDescription(utf8_encode($itemDescription));
 		
 		$this->itemRepository->update($item);
 		$this->persistenceManager->persistAll();
@@ -197,19 +197,23 @@ class Tx_Yag_Controller_AjaxController extends Tx_Yag_Controller_AbstractControl
      * @rbacAction update
 	 */
 	public function updateItemSortingAction() {
-		$order = $_POST['imageUid']; 
-		
-		foreach($order as $index => $itemUid) {
+		$order = $_POST['imageUid'];
+        // As we can have paging in the backend, we need to add an offset which is
+        $offset = $_GET['offset'];
+        foreach($order as $index => $itemUid) {
 			$item = $this->itemRepository->findByUid($itemUid);
-			$item->setSorting($index);
-			$this->itemRepository->update($item);
+            // We probably get a wrong or empty item from jquery, as item could be deleted in the meantime
+            if (!is_null($item)) {
+			    $item->setSorting($index + $offset);
+			    $this->itemRepository->update($item);
+			} 
 		}
 		
 		$this->returnDataAndShutDown();
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Updates sorting of albums in gallery
 	 * 
@@ -250,6 +254,38 @@ class Tx_Yag_Controller_AjaxController extends Tx_Yag_Controller_AbstractControl
 		
 		$this->returnDataAndShutDown();
 	}
+    
+    
+    
+    /**
+     * Sets hidden property of gallery to 1.
+     *
+     * @param Tx_Yag_Domain_Model_Gallery $gallery Gallery to set hidden property for
+     * @rbacNeedsAccess
+     * @rbacObject Gallery
+     * @rbacAction edit
+     */
+    public function hideGalleryAction(Tx_Yag_Domain_Model_Gallery $gallery) {
+        $gallery->setHide(1);
+        $this->galleryRepository->update($gallery);
+        $this->returnDataAndShutDown();
+    }
+    
+    
+    
+    /**
+     * Sets hidden property of gallery to 0.
+     *
+     * @param Tx_Yag_Domain_Model_Gallery $gallery Gallery to set hidden property for
+     * @rbacNeedsAccess
+     * @rbacObject Gallery
+     * @rbacAction edit
+     */
+    public function unhideGalleryAction(Tx_Yag_Domain_Model_Gallery $gallery) {
+        $gallery->setHide(0);
+        $this->galleryRepository->update($gallery);
+        $this->returnDataAndShutDown();
+    }
 	
 	
 	
@@ -265,7 +301,7 @@ class Tx_Yag_Controller_AjaxController extends Tx_Yag_Controller_AbstractControl
 	public function updateAlbumTitleAction($albumUid, $albumTitle) {
 		// We do this for escaping reasons
 		$album = $this->albumRepository->findByUid(intval($albumUid));
-		$album->setTitle($albumTitle);
+		$album->setTitle(utf8_encode($albumTitle));
 		$this->albumRepository->update($album);
 		$this->returnDataAndShutDown();
 	}
@@ -284,31 +320,8 @@ class Tx_Yag_Controller_AjaxController extends Tx_Yag_Controller_AbstractControl
 	public function updateAlbumDescriptionAction($albumUid, $albumDescription) {
 		// We do this for escaping reasons
 		$album = $this->albumRepository->findByUid($albumUid);
-        $album->setDescription($albumDescription);
+        $album->setDescription(utf8_encode($albumDescription));
         $this->albumRepository->update($album);
-        $this->returnDataAndShutDown();
-	}
-	
-	
-	
-	/**
-	 * Updates a generic property
-	 *
-	 * @param string $content Content of property that should be updated
-	 * @param string $classUidProperty Encoding of classname, uid and property that should be updated
-	 */
-	public function updateGenericPropertyAction($content, $classUidProperty) {
-		// TODO we prevent abuse of this
-		echo"OK";
-		exit();
-		
-		list($class, $uid, $property) = explode('-', $classUidProperty);
-		$repositoryClass = preg_replace('/Model/', 'Repository', $class) . 'Repository';
-        $repository = t3lib_div::makeInstance($repositoryClass);
-        $object = $repository->findByUid($uid);
-        call_user_func_array(array($object, "set". ucfirst($property)), array($content));
-        $repository->update($object);
-        
         $this->returnDataAndShutDown();
 	}
 	
@@ -403,18 +416,18 @@ class Tx_Yag_Controller_AjaxController extends Tx_Yag_Controller_AbstractControl
 		$submittedPath = urldecode($_POST['dir']);
 		$pathToBeScanned = $t3basePath . $submittedPath;
 		$encodedFiles = '';
-		#return print_r(array('t3basePath' => $t3basePath, 'submittedPath' => $submittedPath, 'pathToBeScanned' => $pathToBeScanned), true);
+		
 		if( file_exists($pathToBeScanned) && is_dir($pathToBeScanned)) {
-		    $files = scandir($pathToBeScanned);
-		    #return print_r($files, true);
+		    
+			$files = scandir($pathToBeScanned);
 		    natcasesort($files);
+		    
 		    if( count($files) > 2 ) { /* The 2 accounts for . and .. */
 		        $encodedFiles .= "<ul class=\"jqueryFileTree\" style=\"display: none;\">";
 		        // All dirs
 		        foreach( $files as $file ) {
-		        	#return print_r($pathToBeScanned . $file, true);
 		            if( file_exists($pathToBeScanned . $file) && $file != '.' && $file != '..' && is_dir($pathToBeScanned . $file) ) {
-		                $encodedFiles .= "<li class=\"directory collapsed\"><a href=\"#\" rel=\"" . htmlentities($submittedPath . $file) . "/\">" . htmlentities($file) . "</a></li>";
+		                $encodedFiles .= "<li class=\"directory collapsed\"><a href=\"#\" rel=\"" . $submittedPath . $file . "/\">" . $file . "</a></li>";
 		            }
 		        }
 		        // All files
@@ -427,7 +440,7 @@ class Tx_Yag_Controller_AjaxController extends Tx_Yag_Controller_AbstractControl
 		        $encodedFiles .= "</ul>";   
 		    }
 		}
-		return $encodedFiles;
+		$this->returnDataAndShutDown($encodedFiles);
 	}
 	
 	
@@ -440,10 +453,10 @@ class Tx_Yag_Controller_AjaxController extends Tx_Yag_Controller_AbstractControl
 	 */
 	protected function returnDataAndShutDown($content = 'OK') {
 		$this->persistenceManager->persistAll();
-		$this->lifecycleManager->updateState(Tx_PtExtlist_Domain_Lifecycle_LifecycleManager::END);
-        ob_clean();
-        echo $content;
-        exit();
+		$this->lifecycleManager->updateState(Tx_PtExtbase_Lifecycle_Manager::END);
+		t3lib_div::cleanOutputBuffers();
+		echo $content;
+		exit();
 	}
 	
 }

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktusteam.de>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktusteam.de>
 *  All rights reserved
 *
 *
@@ -27,20 +27,34 @@
  * Zip Importer for YAG gallery. Enables importing images from ZIP files
  *
  * @package Domain
- * @subpackage Import
+ * @subpackage Import\ZipImporter
  * @author Michael Knoll <mimi@kaktusteam.de>
+ * @author Daniel Lienert <daniel@lienert.cc>
  */
 class Tx_Yag_Domain_Import_ZipImporter_Importer extends Tx_Yag_Domain_Import_AbstractImporter {
-	
+
 	/**
 	 * Holds path to zipFile
 	 *
 	 * @var string
 	 */
 	protected $zipFilename;
-	
-	
-	
+
+
+	/**
+	 * Holds number of items that were imported during last import
+	 *
+	 * @var int
+	 */
+	protected $itemsImported = 0;
+
+
+	/**
+	 * @var string
+	 */
+	protected $unzipExecutable;
+
+
 	/**
 	 * Setter for zip filename. Sets filename (full path) of zip
 	 * file to be imported.
@@ -51,7 +65,16 @@ class Tx_Yag_Domain_Import_ZipImporter_Importer extends Tx_Yag_Domain_Import_Abs
 		$this->zipFilename = $zipFilename;
 	}
 	
-	
+
+
+	/**
+	 * @param $unzipExecutable
+	 */
+	public function setUnzipExecutable($unzipExecutable) {
+		$this->unzipExecutable = $unzipExecutable;
+	}
+
+
     
 	/**
 	 * Runs actual import. Unpacks zip file to a directory and
@@ -59,22 +82,69 @@ class Tx_Yag_Domain_Import_ZipImporter_Importer extends Tx_Yag_Domain_Import_Abs
 	 * in zip file.
 	 */
 	public function runImport() {
-	    // Unpack zip file
-	    $zip = new ZipArchive;
-	    $tempDir = Tx_Yag_Domain_FileSystem_Div::tempdir(sys_get_temp_dir(), 'yag_zip_extraction');
-        if ($zip->open($this->zipFilename) === TRUE) {
-            $zip->extractTo($tempDir);
-            $zip->close();
-        } else {
-            throw new Exception('Error when trying to extract zip archive 1294159795');
-        }
-        
-        // Initialize directory crawler on extracted file's directory and run import
-        $directoryImporter = Tx_Yag_Domain_Import_DirectoryImporter_ImporterBuilder::getInstance()->getInstanceByDirectoryAndAlbum($tempDir, $this->album);
-        $directoryImporter->setMoveFilesToOrigsDirectoryToTrue(); // Files will be moved to origs directory before they are processed
-        $directoryImporter->setCrawlRecursive(true);
-        $directoryImporter->runImport();
+		// Unpack zip file
+		$tempDir = Tx_Yag_Domain_FileSystem_Div::tempdir(sys_get_temp_dir(), 'yag_zip_extraction');
+		$this->unzipArchive($this->zipFilename, $tempDir);
+
+		// Initialize directory crawler on extracted file's directory and run import
+		$directoryImporter = Tx_Yag_Domain_Import_DirectoryImporter_ImporterBuilder::getInstance()->getInstanceByDirectoryAndAlbum($tempDir, $this->album);
+		$directoryImporter->setMoveFilesToOrigsDirectoryToTrue(); // Files will be moved to origs directory before they are processed
+		$directoryImporter->setCrawlRecursive(TRUE);
+		$directoryImporter->runImport();
+
+		$this->itemsImported = $directoryImporter->getItemsImported();
 	}
+
+
+
+	/**
+	 * @param $zipPathAndFileName string
+	 * @param $tempDir string
+	 * @return bool
+	 * @throws Exception
+	 */
+	protected function unzipArchive($zipPathAndFileName, $tempDir) {
+
+		// check if the PHP module ZipArchive is loaded and use it
+		if (extension_loaded('zip')) {
+
+			$zip = new ZipArchive;
+
+			if ($zip->open($zipPathAndFileName) === TRUE) {
+				$zip->extractTo($tempDir);
+				$zip->close();
+			} else {
+				throw new Exception('Error while trying to extract a zip archive using the PHP module ZipArchive', 1294159795);
+			}
+		}
+
+
+		// call the unzip executable if set
+		if($this->unzipExecutable && is_executable($this->unzipExecutable)) {
+			$cmd = $this->unzipExecutable . ' -qq "' . $zipPathAndFileName . '" -d "' . $tempDir . '"';
+			t3lib_utility_Command::exec($cmd);
+		}
+	}
+
+
+	/**
+	 *
+	 */
+	public function isAvailable() {
+
+	}
+
+
+
+
+    /**
+     * Returns number of items that were imported during last import
+     * 
+     * @return int
+     */
+    public function getItemsImported() {
+        return $this->itemsImported;
+    }
 	
 }
  

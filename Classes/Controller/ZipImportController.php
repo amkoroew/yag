@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <knoll@punkt.de>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktsuteam.de>
 *  All rights reserved
 *
 *
@@ -57,8 +57,7 @@ class Tx_Yag_Controller_ZipImportController extends Tx_Yag_Controller_AbstractCo
 		$this->galleryRepository = t3lib_div::makeInstance('Tx_Yag_Domain_Repository_GalleryRepository');
 	}
 	
-	
-	
+
 
 	/**
 	 * Shows import form for selecting album to import images to
@@ -69,7 +68,7 @@ class Tx_Yag_Controller_ZipImportController extends Tx_Yag_Controller_AbstractCo
 		$albums = $this->albumRepository->findAll();
 		$galleries = $this->galleryRepository->findAll();
         
-        $this->view->assign('galleries', $galleries);
+      $this->view->assign('galleries', $galleries);
 		$this->view->assign('albums', $albums);
 	}
 	
@@ -101,7 +100,7 @@ class Tx_Yag_Controller_ZipImportController extends Tx_Yag_Controller_AbstractCo
 		
 		// TODO add number of images imported to $importer object
 	    $this->flashMessageContainer->add(
-            Tx_Extbase_Utility_Localization::translate('tx_yag_controller_zipimportcontroller_importfromzipaction.uploadsuccessfull', $this->extensionName),
+            Tx_Extbase_Utility_Localization::translate('tx_yag_controller_zipimportcontroller_importfromzipaction.uploadsuccessfull', $this->extensionName, array($importer->getItemsImported())),
             '', 
             t3lib_FlashMessage::OK);
 		$this->yagContext->setAlbum($album);

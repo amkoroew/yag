@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <knoll@punkt.de>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktsuteam.de>
 *  All rights reserved
 *
 *
@@ -24,21 +24,37 @@
 ***************************************************************/
 
 /**
- * Testcase for 
- *
- * @package yag
- * @subpackage Tests\Controller
- * @author Michael Knoll <knoll@punkt.de>
+ * Class implements the navigation path
+ * 
+ * @author Daniel Lienert <daniel@lienert.cc>
+ * @package ViewHelpers
  */
-class Tx_Yag_Tests_Controller_ImportControllerTest extends Tx_Yag_Tests_BaseTestCase {
-     
+class Tx_Yag_ViewHelpers_Widget_ThemeSelectorViewHelper extends Tx_Fluid_Core_Widget_AbstractWidgetViewHelper {
+	
+	
 	/**
-	 * @test
+	 * @var Tx_Yag_ViewHelpers_Widget_Controller_ThemeSelectorController
 	 */
-	public function classExists() {
-        $this->assertTrue(class_exists('Tx_Yag_Controller_ImportController'));		
+	protected $controller;
+
+	
+	/**
+	 * @param Tx_Yag_ViewHelpers_Widget_Controller_ThemeSelectorController $controller
+	 * @return void
+	 */
+	public function injectController(Tx_Yag_ViewHelpers_Widget_Controller_ThemeSelectorController $controller) {
+		$this->controller = $controller;
 	}
 	
-}
+	
 
+	/**
+	 * Render the navigation path
+	 * 
+	 * @return string
+	 */
+	public function render() {
+		return  $this->initiateSubRequest();
+	}
+}
 ?>

@@ -128,9 +128,16 @@ class Tx_Yag_Utility_HeaderInclusion implements t3lib_Singleton {
 	}
 	
 	
-	
-	public function addCssInlineCode() {
-		
+
+	/**
+	 * @param $name
+	 * @param $block
+	 * @param bool $compress
+	 * @param bool $forceOnTop
+	 * @return void
+	 */
+	public function addCssInlineBlock($name, $block, $compress = FALSE, $forceOnTop = FALSE) {
+		$this->pageRenderer->addCssInlineBlock($name, $block, $compress, $forceOnTop);
 	}
 	
 	
@@ -173,25 +180,34 @@ class Tx_Yag_Utility_HeaderInclusion implements t3lib_Singleton {
 		$GLOBALS['TSFE']->backPath = TYPO3_mainDir;
 		$this->pageRenderer = $GLOBALS['TSFE']->getPageRenderer();
 	}
+
+
 	
 	/**
 	 * Expand the EXT to a relative path
 	 * TODO: replace with T3 Method if dound
 	 * 
-	 * @param unknown_type $filename
+	 * @param string $filename
 	 */
-	protected function getFileRelFileName($filename) {
+	public function getFileRelFileName($filename) {
+
 		if (substr($filename, 0, 4) == 'EXT:') { // extension
 			list($extKey, $local) = explode('/', substr($filename, 4), 2);
 			$filename = '';
 			if (strcmp($extKey, '') && t3lib_extMgm::isLoaded($extKey) && strcmp($local, '')) {
-				$filename = t3lib_extMgm::extRelPath($extKey) . $local;
+				if(TYPO3_MODE === 'FE') {
+					$filename = t3lib_extMgm::siteRelPath($extKey) . $local;
+				} else {
+					$filename = t3lib_extMgm::extRelPath($extKey) . $local;
+				}
 			}
 		}
+
 		return $filename;
 	}
-	
-	
+
+
+
 	/**
 	 * Add theme defined CSS / JS to the header
 	 * @var Tx_Yag_Domain_Configuration_Theme_ThemeConfiguration $themeConfiguration
@@ -223,6 +239,5 @@ class Tx_Yag_Utility_HeaderInclusion implements t3lib_Singleton {
 			$this->addJSFile($filePath);
 		}
 	}
-	
 }
 ?>

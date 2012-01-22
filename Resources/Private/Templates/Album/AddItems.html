@@ -36,16 +36,19 @@ Tx_Yag_Domain_Model_Album album               Album to add items to
         <f:render partial="Import/ImportByMultifileForm" arguments="{album : album}" />
     </div>
     <div id="tabs-2">
-        <f:render partial="Import/ImportByZipForm" arguments="{album : album}" />
+        <f:render partial="Import/ImportByZipForm" arguments="{album : album, zipImportAvailable : zipImportAvailable}" />
     </div>
     <div id="tabs-3">
         <f:render partial="Import/ImportByDirectoryForm" arguments="{album : album}" />
     </div>
 </div>
+<div id="resolutionList">
+    
+</div>
 
 <div class="yag-buttonLine">
 	<f:link.action action="submitFilter"  class="yag-fakeButton" controller="ItemList" arguments="{extlist:namespace.GPArray(object: yagContext arguments:'albumUid:{album.uid}')}">
-		<f:translate key="tx_yag_controller_album_addItems.backToAlbumList"/>
+		<f:translate key="tx_yag_controller_album_addItems.backToItemList"/>
 	</f:link.action>
 </div>
 

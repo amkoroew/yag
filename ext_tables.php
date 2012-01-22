@@ -27,25 +27,25 @@ if (TYPO3_MODE === 'BE')	{
 		'',						// Position
 		array(																			// An array holding the controller-action-combinations that are accessible
 	        'Gallery' => 'list, index, show, new, create, edit, update, delete',
-	        'Album' => 'show, new, create, edit, update, delete, addItems',
+	        'Album' => 'show, new, create, edit, update, delete, addItems, updateSorting, bulkUpdate',
 	        'MultifileUpload' => 'showUploadForm, upload',
-	        'Item' => 'index, show, new, create, edit, update, delete',
-	        'ItemList' => 'list',
+	        'Item' => 'index, show, new, create, edit, update, delete, bulkUpdate',
+	        'ItemList' => 'list,submitFilter',
 	        'ItemFile' => 'index, show, new, create, edit, update, delete',
 	        'DirectoryImport' => 'showImportForm, importFromDirectory',
 	        'ZipImport' => 'showImportForm, importFromZip, createNewAlbumAndImportFromZip',
 	        'Remote' => 'addItemToAlbum, albumList, galleryList',
 	        'Ajax' => 'updateItemSorting,updateGallerySorting,directoryAutoComplete,deleteItem,deleteGallery,deleteAlbum,updateItemTitle,setItemAsAlbumThumb,
 	            updateItemDescription,updateAlbumSorting,updateAlbumTitle,updateAlbumDescription,updateGenericProperty,
-	            setAlbumAsGalleryThumb,hideAlbum,unhideAlbum,getSubDirs',
+	            setAlbumAsGalleryThumb,hideAlbum,unhideAlbum,hideGallery,unhideGallery,getSubDirs',
 	        'Setup' => 'index, setupRbac,truncateTables',
 	        'AdminMenu' => 'index',
 			'Category' => 'show,getSubTree,addCategory,saveCategory,removeCategory,moveCategoryBefore,moveCategoryAfter,moveCategoryInto',
 		
 		    // This is additional for backend! Keep in mind, when copy&pasting from ext_localconf
 			'Backend' => 'settingsNotAvailable,extConfSettingsNotAvailable,maintenanceOverview,clearAllPageCache',
-			'ResolutionFileCache' => 'clearResolutionFileCache,buildAllResolutionsForItem,buildAllItemResolutions',
-		),
+			'ResolutionFileCache' => 'clearResolutionFileCache,buildResolutionByConfiguration,buildAllItemResolutions',
+			),
 		array(
 			'access' => 'user,group',
 			'icon'   => 'EXT:yag/ext_icon.gif',
@@ -54,7 +54,13 @@ if (TYPO3_MODE === 'BE')	{
 	);
 	
 	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['Tx_Yag_Utility_WizzardIcon'] = t3lib_extMgm::extPath($_EXTKEY). 'Classes/Utility/WizzardIcon.php';
-	
+
+	// Register status report checks in backend
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['reports']['tx_reports']['status']['providers']['YAG'] = array(
+		'Tx_Yag_Report_ExternalLibraries',
+		'Tx_Yag_Report_Filesystem',
+		'Tx_Yag_Report_EnvironmentVariables'
+	);
 }
 
 
@@ -130,7 +136,7 @@ $TCA['tx_yag_domain_model_album'] = array (
 			'disabled' => 'hidden'
 			),
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY) . 'Configuration/TCA/Album.php',
-		'iconfile' 			=> t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_yag_domain_model_album.gif'
+		'iconfile' 			=> t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_yag_domain_model_album.png'
 	)
 );
 
@@ -153,7 +159,7 @@ $TCA['tx_yag_domain_model_gallery'] = array (
 			'disabled' => 'hidden'
 			),
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY) . 'Configuration/TCA/Gallery.php',
-		'iconfile' 			=> t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_yag_domain_model_gallery.gif'
+		'iconfile' 			=> t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_yag_domain_model_gallery.png'
 	)
 );
 
@@ -177,7 +183,7 @@ $TCA['tx_yag_domain_model_item'] = array (
 			'disabled' => 'hidden'
 			),
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY) . 'Configuration/TCA/Item.php',
-		'iconfile' 			=> t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_yag_domain_model_item.gif'
+		'iconfile' 			=> t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_yag_domain_model_item.png'
 	)
 );
 
@@ -201,7 +207,7 @@ $TCA['tx_yag_domain_model_resolutionfilecache'] = array (
 			'disabled' => 'hidden'
 			),
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY) . 'Configuration/TCA/ResolutionFileCache.php',
-		'iconfile' 			=> t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_yag_domain_model_resolutionfilecache.gif'
+		'iconfile' 			=> t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_yag_domain_model_resolutionfilecache.png'
 	)
 );
 
@@ -225,10 +231,35 @@ $TCA['tx_yag_domain_model_itemmeta'] = array (
             'disabled' => 'hidden'
             ),
         'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY) . 'Configuration/TCA/ItemMeta.php',
-        'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_yag_domain_model_itemmeta.gif'
+        'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_yag_domain_model_itemmeta.png'
     )
 );
 
-
+t3lib_extMgm::addLLrefForTCAdescr('tx_yag_domain_model_tag', 'EXT:yag/Resources/Private/Language/locallang_csh_tx_yag_domain_model_tag.xml');
+t3lib_extMgm::allowTableOnStandardPages('tx_yag_domain_model_tag');
+$TCA['tx_yag_domain_model_tag'] = array(
+	'ctrl' => array(
+		'title'	=> 'LLL:EXT:yag/Resources/Private/Language/locallang_db.xml:tx_yag_domain_model_tag',
+		'label' => 'name',
+		'tstamp' => 'tstamp',
+		'crdate' => 'crdate',
+		'cruser_id' => 'cruser_id',
+		'dividers2tabs' => TRUE,
+		'versioningWS' => 2,
+		'versioning_followPages' => TRUE,
+		'origUid' => 't3_origuid',
+		'languageField' => 'sys_language_uid',
+		'transOrigPointerField' => 'l10n_parent',
+		'transOrigDiffSourceField' => 'l10n_diffsource',
+		'delete' => 'deleted',
+		'enablecolumns' => array(
+			'disabled' => 'hidden',
+			'starttime' => 'starttime',
+			'endtime' => 'endtime',
+		),
+		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY) . 'Configuration/TCA/Tag.php',
+		'iconfile' => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_yag_domain_model_tag.png'
+	),
+);
 
 ?>

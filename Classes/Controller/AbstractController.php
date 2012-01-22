@@ -83,7 +83,7 @@ abstract class Tx_Yag_Controller_AbstractController extends Tx_Extbase_MVC_Contr
 	
 	
 	/**
-     * @var Tx_PtExtlist_Domain_Lifecycle_LifecycleManager
+     * @var Tx_PtExtbase_Lifecycle_Manager
      */
     protected $lifecycleManager;
 
@@ -95,38 +95,41 @@ abstract class Tx_Yag_Controller_AbstractController extends Tx_Extbase_MVC_Contr
      * @var Tx_Rbac_Domain_AccessControllService
      */
     protected $rbacAccessControllService = null;
-	 
-    
 
-    public function __construct() {
-    	$this->lifecycleManager = Tx_PtExtlist_Domain_Lifecycle_LifecycleManagerFactory::getInstance();
+
+
+    /**
+     * Constructor triggers creation of lifecycle manager
+     */
+	public function __construct() {
+		$this->lifecycleManager = Tx_PtExtbase_Lifecycle_ManagerFactory::getInstance();
 		parent::__construct();
-    }
+	}
     
     
     
     /**
      * This action is final, as it should not be overwritten by any extended controllers
      */
-    final protected function initializeAction() {   
-    	if(!$this->configurationBuilder) {
-    		if($this->request->getControllerActionName() == 'settingsNotAvailable') return;
-    		$this->redirect('settingsNotAvailable', 'Backend');	
-    	}
-    	
-    	if(!count($this->configurationBuilder->getExtConfSettings())) {
-    		if($this->request->getControllerActionName() == 'extConfSettingsNotAvailable') return;
-    		$this->redirect('extConfSettingsNotAvailable', 'Backend');
-    	}
-    	
-    	$this->lifecycleManager->registerAndUpdateStateOnRegisteredObject($this->objectManager->get('Tx_Yag_PageCache_PageCacheManager'));
-    	
-    	$this->preInitializeAction();
-    	$this->initializeFeUser();
-        $this->initAccessControllService();     
-        $this->doRbacCheck();
-    	$this->postInitializeAction();
-    }
+	final protected function initializeAction() {
+		if (!$this->configurationBuilder) {
+			if ($this->request->getControllerActionName() == 'settingsNotAvailable') return;
+			$this->redirect('settingsNotAvailable', 'Backend');
+		}
+
+		if (!count($this->configurationBuilder->getExtConfSettings())) {
+			if ($this->request->getControllerActionName() == 'extConfSettingsNotAvailable') return;
+			$this->redirect('extConfSettingsNotAvailable', 'Backend');
+		}
+
+		$this->lifecycleManager->registerAndUpdateStateOnRegisteredObject($this->objectManager->get('Tx_Yag_PageCache_PageCacheManager'));
+
+		$this->preInitializeAction();
+		$this->initializeFeUser();
+		$this->initAccessControllService();
+		$this->doRbacCheck();
+		$this->postInitializeAction();
+	}
     
     
     
@@ -135,7 +138,7 @@ abstract class Tx_Yag_Controller_AbstractController extends Tx_Extbase_MVC_Contr
 		
 		if(TYPO3_MODE === 'BE') {
 			// if we are in BE mode, this ist the last line called
-			Tx_PtExtlist_Domain_Lifecycle_LifecycleManagerFactory::getInstance()->updateState(Tx_PtExtlist_Domain_Lifecycle_LifecycleManager::END);
+			Tx_PtExtbase_Lifecycle_ManagerFactory::getInstance()->updateState(Tx_PtExtbase_Lifecycle_Manager::END);
 		}
 	}
     
@@ -229,20 +232,19 @@ abstract class Tx_Yag_Controller_AbstractController extends Tx_Extbase_MVC_Contr
     		$this->configurationBuilder = Tx_Yag_Domain_Configuration_ConfigurationBuilderFactory::getInstance($contextIdentifier, $this->settings['theme']);
 
     		if(TYPO3_MODE === 'FE') {
-    			t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager')->get('Tx_PtExtlist_Extbase_ExtbaseContext')->setInCachedMode(true);
-    			$sessionStorageClass = Tx_PtExtlist_Domain_StateAdapter_SessionPersistenceManager::STORAGE_ADAPTER_NULL;
+    			t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager')->get('Tx_PtExtlist_Extbase_ExtbaseContext')->setInCachedMode(TRUE);
+
+    			$storageAdapter = Tx_PtExtbase_State_Session_Storage_NullStorageAdapter::getInstance();
 
     			// support old pt_extlist - remove, if this version requires the newer pt_extlist version
     			if(method_exists(t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager')->get('Tx_PtExtlist_Extbase_ExtbaseContext'), 'setSessionStorageMode')) {
     				t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager')->get('Tx_PtExtlist_Extbase_ExtbaseContext')->setSessionStorageMode(Tx_PtExtlist_Domain_StateAdapter_SessionPersistenceManager::STORAGE_ADAPTER_NULL);
     			}
     			
-    			$this->lifecycleManager->registerAndUpdateStateOnRegisteredObject(Tx_PtExtlist_Domain_StateAdapter_SessionPersistenceManagerFactory::getInstance($sessionStorageClass));
+    			$this->lifecycleManager->registerAndUpdateStateOnRegisteredObject(Tx_PtExtbase_State_Session_SessionPersistenceManagerFactory::getInstance($storageAdapter));
     		} else {
-    			$this->lifecycleManager->registerAndUpdateStateOnRegisteredObject(Tx_PtExtlist_Domain_StateAdapter_SessionPersistenceManagerFactory::getInstance());
+    			$this->lifecycleManager->registerAndUpdateStateOnRegisteredObject(Tx_PtExtbase_State_Session_SessionPersistenceManagerFactory::getInstance());
     		}
-    			
-    		
 
     		$this->yagContext = Tx_Yag_Domain_Context_YagContextFactory::createInstance($contextIdentifier);
     	}
@@ -444,7 +446,7 @@ abstract class Tx_Yag_Controller_AbstractController extends Tx_Extbase_MVC_Contr
      * @api
      */
     protected function redirect($actionName, $controllerName = NULL, $extensionName = NULL, array $arguments = NULL, $pageUid = NULL, $delay = 0, $statusCode = 303) {
-    	$this->lifecycleManager->updateState(Tx_PtExtlist_Domain_Lifecycle_LifecycleManager::END);
+    	$this->lifecycleManager->updateState(Tx_PtExtbase_Lifecycle_Manager::END);
         parent::redirect($actionName, $controllerName, $extensionName, $arguments, $pageUid, $delay, $statusCode);
     }
     

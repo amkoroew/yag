@@ -1,5 +1,6 @@
 {namespace yag=Tx_Yag_ViewHelpers}
 {namespace extlist=Tx_PtExtlist_ViewHelpers}
+{namespace ptextbase=Tx_PtExtbase_ViewHelpers}
 
 <extlist:comment>
 <!--  
@@ -48,10 +49,10 @@ Tx_Yag_Domain_Model_Item mainItem              Item to be rendered
 			<div class="tx-yag-previous">
 			    <f:if condition="{pager.currentPage} != 1">
 			        <f:then>
-				        <extlist:link.action action="show" arguments="{itemListOffset: pager.previousPage}"><f:translate key="pager.previous" default="&laquo; previous" /></extlist:link.action>
+				        <extlist:link.action action="show" arguments="{itemListOffset: pager.previousPage}"><f:translate key="tx_yag_general.previous" default="&laquo; previous" /></extlist:link.action>
 				    </f:then>
 				    <f:else>
-				        <f:translate key="pager.previous" default="&laquo; previous" />
+				        <f:translate key="tx_yag_general.previous" default="&laquo; previous" />
 				    </f:else>
 			    </f:if>
 			</div>
@@ -61,10 +62,10 @@ Tx_Yag_Domain_Model_Item mainItem              Item to be rendered
 			<div class="tx-yag-next" >
 			    <f:if condition="{lastItem}">
 			        <f:then>
-			            <f:translate key="pager.next" default="next &raquo;" />
+			            <f:translate key="tx_yag_general.next" default="next &raquo;" />
 			        </f:then>
 			        <f:else>
-			        	<extlist:link.action action="show" arguments="{itemListOffset: pager.nextPage}"><f:translate key="pager.next" default="next &raquo;" /></extlist:link.action>
+			        	<extlist:link.action action="show" arguments="{itemListOffset: pager.nextPage}"><f:translate key="tx_yag_general.next" default="next &raquo;" /></extlist:link.action>
 			        </f:else>
 				</f:if>
 			</div>
@@ -82,5 +83,5 @@ Tx_Yag_Domain_Model_Item mainItem              Item to be rendered
 </f:section>
 
 <f:section name="beButtonsLeft">
-	<f:be.buttons.icon uri="{f:uri.action(action: 'show', controller: 'ItemList', arguments: '{backFromItemUid : mainItem.uid}')}"/>
+	<ptextbase:be.buttons.icon uri="{f:uri.action(action: 'show', controller: 'ItemList', arguments: '{backFromItemUid : mainItem.uid}')}"/>
 </f:section>

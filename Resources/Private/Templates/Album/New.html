@@ -1,26 +1,27 @@
 {namespace yag = Tx_Yag_ViewHelpers}
+{namespace ptextbase=Tx_PtExtbase_ViewHelpers}
 
 <f:layout name="Default" />
 <f:section name="main">
 <h1><f:translate key="tx_yag_controller_album_new.header" /></h1>
 
-	<f:render partial="FormErrors" arguments="{for: 'newGallery'}" />
+	<f:render partial="FormErrors" arguments="{for: 'newAlbum'}" />
 	<f:form method="post" controller="Album" action="create" name="newAlbum" object="{newAlbum}">
 	    <f:render partial="Album/FormFields" arguments="{album:album, selectableGalleries:selectableGalleries, selectedGallery:selectedGallery}" />
    
 	    <div class="yag-buttonLine">
     		<span class="yag-button">
-		    	<f:link.action controller="Gallery" action="index" arguments="{gallery : selectedGallery}" class="yag-fakeButton">
-		    		<f:translate key="tx_yag_controller_gallery.backToGallery" default="Back to gallery"/>
-		    	</f:link.action>
+    			<f:form.submit class="submit" value="{f:translate(key: 'tx_yag_general.save', default: 'Save')} {f:translate(key: 'tx_yag_general.album')}" />
     		</span>
     		<span class="yag-button">
-    			<f:form.submit class="submit" value="{f:translate(key: 'tx_yag_general.save', default: 'Save')}" />
+		    	<f:link.action controller="Gallery" action="index" arguments="{gallery : selectedGallery}" class="yag-fakeButton">
+                    <f:translate key="tx_yag_general.cancel"/>
+		    	</f:link.action>
     		</span>
     	</div>
 	</f:form>
 </f:section>
 
 <f:section name="beButtonsLeft">
-	<f:be.buttons.icon uri="{f:uri.action(action: 'index', controller:'Gallery', arguments:{gallery : selectedGallery})}"/>
+	<ptextbase:be.buttons.icon uri="{f:uri.action(action: 'index', controller:'Gallery', arguments:{gallery : selectedGallery})}"/>
 </f:section>

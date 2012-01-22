@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktusteam.de>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktusteam.de>
 *  All rights reserved
 *
 *
@@ -85,6 +85,7 @@ class Tx_Yag_Domain_Import_ImporterBuilder {
 	public function createImporter($importerClassName) {
 	    $importer = new $importerClassName; /* @var $importer Tx_Yag_Domain_Import_AbstractImporter */
 	    $importer->injectConfigurationBuilder($this->configurationBuilder);
+	    $importer->injectImporterConfiguration($this->configurationBuilder->buildImporterConfiguration());
 	    $importer->injectImageProcessor(Tx_Yag_Domain_ImageProcessing_ProcessorFactory::getInstance($this->configurationBuilder));
 	    $importer->injectItemRepository(t3lib_div::makeInstance('Tx_Yag_Domain_Repository_ItemRepository'));
 	    $importer->injectItemMetaRepository(t3lib_div::makeInstance('Tx_Yag_Domain_Repository_ItemMetaRepository'));

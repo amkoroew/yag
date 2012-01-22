@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktusteam.de>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktusteam.de>
 *  All rights reserved
 *
 *
@@ -27,7 +27,7 @@
  * File importer for importing single files into YAG gallery
  *
  * @package Domain
- * @subpackage Import
+ * @subpackage Import\FileImporter
  * @author Michael Knoll <mimi@kaktusteam.de>
  */
 class Tx_Yag_Domain_Import_FileImporter_Importer extends Tx_Yag_Domain_Import_AbstractImporter {
@@ -62,23 +62,22 @@ class Tx_Yag_Domain_Import_FileImporter_Importer extends Tx_Yag_Domain_Import_Ab
 	
 	/**
 	 * Runs import of file previously set by setFilePath
-	 *
-	 * @return Tx_Yag_Domain_Model_Item Imported item 
+	 * @return Tx_Yag_Domain_Model_Item Imported item
 	 */
 	public function runImport() {
 		$item = null;
 		$filepath = $this->filePath;
-		
+
 		if ($this->moveFilesToOrigsDirectory) {
-             $item = $this->getNewPersistedItem();
-             $filepath = $this->moveFileToOrigsDirectory($filepath, $item);
+			$item = $this->getNewPersistedItem();
+			$filepath = $this->moveFileToOrigsDirectory($filepath, $item);
 		}
-		
+
 		$this->importFileByFilename($filepath, $item);
-		if($this->originalFileName) $item->setTitle($this->originalFileName);
+		if ($this->originalFileName) $item->setTitle($this->originalFileName);
 		$item->setItemType($this->itemType);
 		$this->runPostImportAction();
-		
+
 		return $item;
 	}
 	
@@ -90,7 +89,7 @@ class Tx_Yag_Domain_Import_FileImporter_Importer extends Tx_Yag_Domain_Import_Ab
 	 * @param string $filePath Path to file that should be imported
 	 * @param bool $checkForFileToBeExisting If set to true, it is checked whether file is existing
 	 */
-	public function setFilePath($filePath, $checkForFileToBeExisting = true) {
+	public function setFilePath($filePath, $checkForFileToBeExisting = TRUE) {
 		if ($checkForFileToBeExisting && !file_exists($filePath)) {
 			throw new Exception('File ' . $filePath . ' does not exist on server! 1296187347');
 		}

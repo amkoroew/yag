@@ -27,7 +27,7 @@
 * Abstract image processor
 *
 * @package Domain
-* @subpackage Processor
+* @subpackage ImageProcessing
 * @author Daniel Lienert <daniel@lienert.cc>
 */
 
@@ -37,7 +37,7 @@ abstract class Tx_Yag_Domain_ImageProcessing_AbstractProcessor implements Tx_Yag
 	/**
 	 * Holds configuration for image processor
 	 *
-	 * @var Tx_Yag_Domain_Configuration_ImageProcessing_ProcessorConfiguration
+	 * @var Tx_Yag_Domain_Configuration_ImageProcessing_ImageProcessorConfiguration
 	 */
     protected $configuration;
 	
@@ -49,6 +49,7 @@ abstract class Tx_Yag_Domain_ImageProcessing_AbstractProcessor implements Tx_Yag
      * @var Tx_Yag_Domain_FileSystem_HashFileSystem
      */
     protected $hashFileSystem;
+    
     
     
     /**
@@ -111,7 +112,6 @@ abstract class Tx_Yag_Domain_ImageProcessing_AbstractProcessor implements Tx_Yag
 	
 	
 	
-	
 	/**
 	 * Build and return the target file path of the resolution file
 	 * 
@@ -123,7 +123,7 @@ abstract class Tx_Yag_Domain_ImageProcessing_AbstractProcessor implements Tx_Yag
     	$nextUid = $this->resolutionFileRepository->getCurrentUid();
     	
     	// Get a path in the hash filesystem
-        $resolutionFileName = substr(uniqid($nextUid.'x'),0,16);
+      $resolutionFileName = substr(uniqid($nextUid.'x'),0,16);
     	$targetFilePath = $this->hashFileSystem->createAndGetAbsolutePathById($nextUid) . '/' . $resolutionFileName . '.' . $extension;
     	
     	return $targetFilePath;
@@ -155,5 +155,6 @@ abstract class Tx_Yag_Domain_ImageProcessing_AbstractProcessor implements Tx_Yag
 	public function injectResolutionFileRepository(Tx_Yag_Domain_Repository_ResolutionFileCacheRepository $resolutionFileRepository) {
 		$this->resolutionFileRepository = $resolutionFileRepository;
 	}
+	
 }
 ?>

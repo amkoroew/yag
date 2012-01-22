@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <knoll@punkt.de>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktsuteam.de>
 *  All rights reserved
 *
 *
@@ -36,7 +36,7 @@
  *
  * @package Domain
  * @subpackage FileSystem
- * @author Michael Knoll <knoll@punkt.de>
+ * @author Michael Knoll <mimi@kaktsuteam.de>
  */
 class Tx_Yag_Domain_FileSystem_HashFileSystem {
 
@@ -63,7 +63,8 @@ class Tx_Yag_Domain_FileSystem_HashFileSystem {
 	 * @param string $rootDirectory Path to root directory for filesystem
 	 */
 	public function __construct($rootDirectory) {
-		if (!file_exists(Tx_Yag_Domain_FileSystem_Div::makePathAbsolute($rootDirectory))) throw new Exception('Directory ' . $rootDirectory . ' does not exist! 1287524902');
+		$absolutRootDirectory = Tx_Yag_Domain_FileSystem_Div::makePathAbsolute($rootDirectory);
+		if (!file_exists($absolutRootDirectory)) throw new Exception('Directory ' . $absolutRootDirectory . ' does not exist! 1287524902');
 		$this->rootDirectory = $rootDirectory;
 	}
 	

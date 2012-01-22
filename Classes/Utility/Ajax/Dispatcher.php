@@ -175,22 +175,13 @@ class Tx_Yag_Utility_Ajax_Dispatcher {
 		$this->controllerName 	= $this->requestArguments['controllerName'];
 		$this->actionName 		= $this->requestArguments['actionName'];
 		
-		$this->arguments 		= $this->requestArguments['arguments'];
-		if(!is_array($this->arguments)) $this->arguments = array();
-	}
-	
-	
-	
-	/**
-	 * Set the request array from JSON
-	 * 
-	 * @param string $request
-	 */
-	protected function setRequestArgumentsFromJSON($request) {
-		$requestArray = json_decode($request, true);
-		if(is_array($requestArray)) {
-			$this->requestArguments = t3lib_div::array_merge_recursive_overrule($this->requestArguments, $requestArray);
-		}
+
+		$call = json_decode($callJSON, TRUE);
+		$this->extensionName 	= $call['extensionName'];
+		$this->pluginName 		= $call['pluginName'];
+		$this->controllerName 	= $call['controllerName'];
+		$this->actionName 		= $call['actionName'];
+		$this->arguments 		= $call['arguments'];	
 	}
 	
 	

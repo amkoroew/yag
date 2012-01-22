@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Michael Knoll <mimi@kaktusteam.de>
+*  (c) 2010-2011 Michael Knoll <mimi@kaktusteam.de>
 *           Daniel Lienert <daniel@lienert.cc>
 *  All rights reserved
 *
@@ -28,12 +28,11 @@
  *
  * @package Domain
  * @subpackage Repository
- * @author Michael Knoll <mimi@kaktusteam.de>
- * @author Daniel Lienert <daniel@lienert.cc>
+ * @author Michael Knoll
+ * @author Daniel Lienert
  */
 class Tx_Yag_Domain_Repository_ItemRepository extends Tx_Yag_Domain_Repository_AbstractRepository {
-	
-	
+
 	/**
 	 * Get the "image not found" default image
 	 * 
@@ -87,27 +86,32 @@ class Tx_Yag_Domain_Repository_ItemRepository extends Tx_Yag_Domain_Repository_A
 	
 	
 	/**
-	 * Get the item wich is in the database after the given item
+	 * Get the item which is in the database after the given item
 	 * 
 	 * @param Tx_Yag_Domain_Model_Item $item
+	 * @param int $limit of items to return
 	 * @return Tx_Yag_Domain_Model_Item $item
 	 */
-	public function getItemAfterThisItem(Tx_Yag_Domain_Model_Item $item = NULL) {
+	public function getItemsAfterThisItem(Tx_Yag_Domain_Model_Item $item = NULL, $limit = 1) {
 		$itemUid = $item ? $item->getUid() : 0;
 		
 		$query = $this->createQuery();
 		$result = $query->matching($query->greaterThan('uid', $itemUid))
-			  			->setLimit(1)
+			  			->setLimit($limit)
 			  			->execute();
 			  			
-		
 		$object = NULL;
-		if ($result->current() !== FALSE) {
+		if ($result->count() == 0) {
+			return false;
+			
+		} elseif ($result->count() == 1 && $result->current() !== FALSE) {
 			$object = $result->current();
 			$this->identityMap->registerObject($object, $object->getUid());
+			return $object;
+
+		} else {
+			return $result;
 		}
-		
-		return $object;
 	}
 	
 	
@@ -144,5 +148,105 @@ class Tx_Yag_Domain_Repository_ItemRepository extends Tx_Yag_Domain_Repository_A
 		$result = $query->statement(sprintf($statement, $gallery->getUid()))->execute();
 		return (int) $result[0]['sumItems'];
 	}
+
+
+
+    /**
+     * Returns a sorted list of items for given album, sorting field and sorting direction.
+     *
+     * Sorting of item is set on returned collection of items!
+     *
+     * @param Tx_Yag_Domain_Model_Album $album
+     * @param string $sortingField
+     * @param string $sortingDirection
+     * @return void
+     */
+    public function getSortedItemsByAlbumFieldAndDirection(Tx_Yag_Domain_Model_Album $album, $sortingField, $sortingDirection) {
+        $sortings = array($sortingField => $sortingDirection);
+        $query = $this->createQuery();
+        $query->matching($query->equals('album', $album))
+              ->setOrderings($sortings);
+        $items = $query->execute();
+
+        $sortingNumber = 0;
+        foreach ($items as $item) { /* @var $item Tx_Yag_Domain_Model_Item */
+            $item->setSorting($sortingNumber);
+            $sortingNumber++;
+        }
+        return $items;
+    }
+
+
+
+    /**
+     * Returns item with highest sorting for given album
+     * 
+     * @param Tx_Yag_Domain_Model_Album $album
+     * @return array|Tx_Extbase_Persistence_QueryResultInterface
+     */
+    public function getItemWithMaxSortingForAlbum(Tx_Yag_Domain_Model_Album $album) {
+        $query = $this->createQuery();
+        $query->matching($query->equals('album', $album));
+        $query->setOrderings(array('sorting' => Tx_Extbase_Persistence_QueryInterface::ORDER_DESCENDING));
+        $query->setLimit(1);
+        return $query->execute();
+    }
+
+
+
+
+	/**
+	 * @param $uidArray
+	 * @return array|Tx_Extbase_Persistence_QueryResultInterface
+	 */
+	public function getItemsByUids($uidArray) {
+		$query = $this->createQuery();
+      $query->matching($query->in('uid', $uidArray));
+		return $query->execute();
+	}
+
+
+
+    /**
+     * Returns a random set of images for a given number, gallery and album
+     *
+     * @param $numberOfItems Sets number of items to be returned
+     * @param null $galleryUid Gallery UID to take images from
+     * @param null $albumUid Album UID to take images from
+     * @return array<Tx_Yag_Domain_Model_Item>
+     */
+    public function getRandomItems($numberOfItems, $galleryUid = null, $albumUid = null) {
+        $numberOfItems = intval($numberOfItems);
+        $albumUid = intval($albumUid);
+        $galleryUid = intval($galleryUid);
+
+        $sqlQuery = 'SELECT tx_yag_domain_model_item.uid FROM tx_yag_domain_model_item ';
+        $where = 'WHERE 1 ';
+        if ($albumUid || $galleryUid) {
+            $sqlQuery .= 'JOIN tx_yag_domain_model_album a ON tx_yag_domain_model_item.album = a.uid ';
+		}
+		if ($albumUid) {
+			$where .= ' AND a.uid=' . $albumUid . ' ';
+		}
+		if ($galleryUid) {
+            $sqlQuery .= 'JOIN tx_yag_domain_model_gallery g ON a.gallery = g.uid ';
+            $where .= ' AND g.uid=' . $galleryUid . ' ';
+        }
+        $sqlQuery .= $where;
+        $sqlQuery .= $this->getTypo3SpecialFieldsWhereClause(array('tx_yag_domain_model_item')) . ' ';
+		$sqlQuery .= 'ORDER BY rand() LIMIT ' . $numberOfItems;
+
+        $query = $this->createQuery();
+        $query->getQuerySettings()->setReturnRawQueryResult(TRUE);
+
+		$results = $query->statement($sqlQuery)->execute();
+        $itemUids = array();
+        foreach($results as $result) {
+            $itemUids[] = $result['uid'];
+        }
+
+        return $this->getItemsByUids($itemUids);
+    }
+
 }
 ?>

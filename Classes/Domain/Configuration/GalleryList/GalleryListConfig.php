@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>
 *  			Michael Knoll <mimi@kaktusteam.de>
 *  			
 *  All rights reserved
@@ -31,7 +31,7 @@
  * @subpackage Configuration\GalleryList
  * @author Daniel Lienert <daniel@lienert.cc>
  */
-class Tx_Yag_Domain_Configuration_GalleryList_GalleryListConfig extends Tx_PtExtlist_Domain_Configuration_AbstractConfiguration {
+class Tx_Yag_Domain_Configuration_GalleryList_GalleryListConfig extends Tx_PtExtbase_Configuration_AbstractConfiguration {
 	
 	
 	/**

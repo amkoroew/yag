@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <knoll@punkt.de>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktsuteam.de>
 *  All rights reserved
 *
 *
@@ -28,7 +28,7 @@
  *
  * @package Tests
  * @subpackage Domain\Import
- * @author Michael Knoll <knoll@punkt.de>
+ * @author Michael Knoll <mimi@kaktsuteam.de>
  */
 class Tx_Yag_Tests_Domain_Import_FileCrawlerTest extends Tx_Yag_Tests_BaseTestCase {
 
@@ -91,13 +91,12 @@ class Tx_Yag_Tests_Domain_Import_FileCrawlerTest extends Tx_Yag_Tests_BaseTestCa
 	 * @test
 	 */
 	public function getFilesForGivenDirectoryReturnsFilesForDirectory() {
-		// TODO fix this to be working on any installation
-		$testingDirectory = '/var/www/kunden/pt_list_dev.centos.localhost/typo3conf/ext/yag/Tests/Domain/Import/FilesForCrawlerTest';
+		$testingDirectory = PATH_site . 'typo3conf/ext/yag/Tests/Domain/Import/FilesForCrawlerTest';
 		$crawledFiles = $this->fixture->getFilesForGivenDirectory($testingDirectory);
-		$this->assertTrue(in_array('test1.jpg', $crawledFiles));
-		$this->assertTrue(in_array('test2.jpg', $crawledFiles));
-		$this->assertTrue(in_array('test3.jpeg', $crawledFiles));
-		$this->assertTrue(!in_array('test4.nonjpg', $crawledFiles));
+		$this->assertTrue(in_array($testingDirectory.'/test1.jpg', $crawledFiles));
+		$this->assertTrue(in_array($testingDirectory.'/test2.jpg', $crawledFiles));
+		$this->assertTrue(in_array($testingDirectory.'/test3.jpeg', $crawledFiles));
+		$this->assertTrue(!in_array($testingDirectory.'/test4.nonjpg', $crawledFiles));
 	}
 	
 }

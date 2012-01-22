@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Michael Knoll <mimi@kaktusteam.de>
+*  (c) 2010-2011 Michael Knoll <mimi@kaktusteam.de>
 *           Daniel Lienert <daniel@lienert.cc>
 *  All rights reserved
 *
@@ -62,5 +62,26 @@ class Tx_Yag_Domain_Repository_AbstractRepository extends Tx_Extbase_Persistence
 		parent::update($modifiedObject);
 		$this->objectManager->get('Tx_Yag_PageCache_PageCacheManager')->markObjectUpdated($modifiedObject);
 	}
+
+
+
+	/**
+	 * Build and return whereclause part with TYPO3 enablefields criterias
+	 * for all tables which are defined in backendConfig.tables and in TCA
+	 *
+	 * @return string whereclause part with TYPO3 enablefields criterias
+	 */
+	protected function getTypo3SpecialFieldsWhereClause(array $typo3Tables) {
+		$specialFieldsWhereClause = '';
+
+		foreach($typo3Tables as $typo3Table) {
+			if (is_array($GLOBALS['TCA'][$typo3Table])) {
+				$specialFieldsWhereClause .= Tx_PtExtlist_Utility_RenderValue::getCobj()->enableFields($typo3Table);
+			}
+		}
+
+		return $specialFieldsWhereClause;
+	}
+	
 }
 ?>

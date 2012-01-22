@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <knoll@punkt.de>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktsuteam.de>
 *  All rights reserved
 *
 *
@@ -52,20 +52,23 @@ class Tx_Yag_Domain_Context_YagContextFactory {
 	 * Create and store a named context 
 	 * 
 	 * @param Tx_Yag_Domain_Context_YagContext $identifier
+	 * @return Tx_Yag_Domain_Context_YagContext
 	 */
 	public static function createInstance($identifier) {
-		
 		self::$activeContext = $identifier;
 		
 		if(self::$instances[$identifier] == NULL) {
+			$extensionNameSpace = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager')
+                                        ->get('Tx_Yag_Extbase_ExtbaseContext')
+                                        ->getExtensionNameSpace();
 			
 			$yagContext = new Tx_Yag_Domain_Context_YagContext($identifier);
 			$yagContext->injectConfigurationBuilder(Tx_Yag_Domain_Configuration_ConfigurationBuilderFactory::getInstance());
 			
-			$sessionPersistenceManager = Tx_PtExtlist_Domain_StateAdapter_SessionPersistenceManagerFactory::getInstance();
+			$sessionPersistenceManager = Tx_PtExtbase_State_Session_SessionPersistenceManagerFactory::getInstance();
 			$sessionPersistenceManager->registerObjectAndLoadFromSession($yagContext);
 
-			$gpVarsAdapter = Tx_PtExtlist_Domain_StateAdapter_GetPostVarAdapterFactory::getInstance();
+			$gpVarsAdapter = Tx_PtExtbase_State_GpVars_GpVarsAdapterFactory::getInstance($extensionNameSpace);
         	$gpVarsAdapter->injectParametersInObject($yagContext);
         	
         	$yagContext->init();
@@ -82,6 +85,7 @@ class Tx_Yag_Domain_Context_YagContextFactory {
 	 * Get an identified or active context 
 	 * 
 	 * @param Tx_Yag_Domain_Context_YagContext $identifier
+	 * @return Tx_Yag_Domain_Context_YagContext
 	 */
 	public static function getInstance($identifier = '') {
 		

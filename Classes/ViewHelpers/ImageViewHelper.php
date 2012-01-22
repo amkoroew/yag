@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <knoll@punkt.de>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktsuteam.de>
 *  All rights reserved
 *
 *
@@ -37,14 +37,8 @@ class Tx_Yag_ViewHelpers_ImageViewHelper extends Tx_Fluid_Core_ViewHelper_Abstra
 	 */
 	protected $tagName = 'img';
 	
-	
-	
-	/**
-	 * @var Tx_Yag_Domain_Configuration_Image_ResolutionConfigCollection
-	 */
-	protected $resolutionConfigCollection;
-	
-	
+
+
 	/**
 	 * Initialize arguments.
 	 *
@@ -54,19 +48,6 @@ class Tx_Yag_ViewHelpers_ImageViewHelper extends Tx_Fluid_Core_ViewHelper_Abstra
 		parent::initializeArguments();
 		$this->registerUniversalTagAttributes();
 		$this->registerTagAttribute('alt', 'string', 'Specifies an alternate text for an image', false);
-	}
-	
-	
-	/**
-	 * (non-PHPdoc)
-	 * @see Classes/Core/ViewHelper/Tx_Fluid_Core_ViewHelper_AbstractTagBasedViewHelper::initialize()
-	 */
-	public function initialize() {
-		parent::initialize();
-		
-		$this->resolutionConfigCollection = Tx_Yag_Domain_Configuration_ConfigurationBuilderFactory::getInstance()
-													->buildThemeConfiguration()
-													->getResolutionConfigCollection();								
 	}
 
 
@@ -86,9 +67,12 @@ class Tx_Yag_ViewHelpers_ImageViewHelper extends Tx_Fluid_Core_ViewHelper_Abstra
 			$itemRepository = t3lib_div::makeInstance('Tx_Yag_Domain_Repository_ItemRepository');
 			$item = $itemRepository->getSystemImage('imageNotFound');	
 		}
-		
+
 		if($resolutionName) {
-			$resolutionConfig = $this->resolutionConfigCollection->getResolutionConfig($resolutionName);
+			$resolutionConfig = $this->resolutionConfigCollection = Tx_Yag_Domain_Configuration_ConfigurationBuilderFactory::getInstance()
+													->buildThemeConfiguration()
+													->getResolutionConfigCollection()
+					  								->getResolutionConfig($resolutionName);
 		} elseIf ($width || $height) {
 			$resolutionSettings = array(
 				'width' => $width,
@@ -111,7 +95,7 @@ class Tx_Yag_ViewHelpers_ImageViewHelper extends Tx_Fluid_Core_ViewHelper_Abstra
 			$this->tag->addAttribute('title', $item->getTitle());
 		}
 
-		$imageSource = TYPO3_MODE === 'BE' ? '../' . $imageResolution->getPath() : $imageResolution->getPath();
+		$imageSource = TYPO3_MODE === 'BE' ? '../' . $imageResolution->getPath() : $GLOBALS['TSFE']->absRefPrefix . $imageResolution->getPath();
 		
 		$this->tag->addAttribute('src', $imageSource);
 		$this->tag->addAttribute('width', $imageResolution->getWidth());

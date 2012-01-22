@@ -1,9 +1,8 @@
 <?php
-
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Michael Knoll <mimi@kaktusteam.de>
+*  (c) 2010-2011 Michael Knoll <mimi@kaktusteam.de>
 *  			Daniel Lienert <daniel@lienert.cc>
 *  			
 *  All rights reserved
@@ -41,6 +40,15 @@ class Tx_Yag_Domain_Model_Gallery extends Tx_Extbase_DomainObject_AbstractEntity
      * @var string $name
      */
     protected $name;
+    
+    
+    
+    /**
+     * If set to true, gallery will be hidden
+     *
+     * @var int
+     */
+    protected $hide;
     
     
 
@@ -318,10 +326,6 @@ class Tx_Yag_Domain_Model_Gallery extends Tx_Extbase_DomainObject_AbstractEntity
     }
     
     
-    
-    
-    
-    
 
     /**
      * Removes a Album
@@ -395,14 +399,16 @@ class Tx_Yag_Domain_Model_Gallery extends Tx_Extbase_DomainObject_AbstractEntity
 	 * 
 	 * @param bool $deleteAlbums If set to true, all albums of gallery will be deleted
 	 */
-	public function delete($deleteAlbums = true) {
+	public function delete($deleteAlbums = TRUE) {
+
 		if ($deleteAlbums) {
-			foreach ($this->albums as $album) {
+			foreach ($this->albums as $album) { /* @var $album Tx_Yag_Domain_Model_Album */
 				$this->removeAlbum($album);
 				$album->delete();
 			}
 		}
-		$galleryRepository = t3lib_div::makeInstance('Tx_Yag_Domain_Repository_GalleryRepository');
+
+		$galleryRepository = t3lib_div::makeInstance('Tx_Yag_Domain_Repository_GalleryRepository'); /* @var $galleryRepository Tx_Yag_Domain_Repository_GalleryRepository */
 		$galleryRepository->remove($this);
 	}
 	
@@ -429,5 +435,29 @@ class Tx_Yag_Domain_Model_Gallery extends Tx_Extbase_DomainObject_AbstractEntity
 	public function getItemCount() {
 		return t3lib_div::makeInstance('Tx_Yag_Domain_Repository_ItemRepository')->countItemsInGallery($this);
 	}
+	
+	
+	
+	/**
+	 * Getter for hide property
+	 *
+	 * @return int
+	 */
+	public function getHide() {
+		return $this->hide;
+	}
+	
+	
+	
+	/**
+	 * Setter for hide property
+	 *
+	 * @param int $hide
+	 */
+	public function setHide($hide) {
+		$this->hide = $hide;
+	}
+	
 }
+
 ?>

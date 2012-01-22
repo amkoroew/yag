@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <lienert@punkt.de>, Michael Knoll <knoll@punkt.de>
+*  (c) 2010-2011 Daniel Lienert <lienert@punkt.de>, Michael Knoll <mimi@kaktsuteam.de>
 *  All rights reserved
 *
 *
@@ -31,7 +31,7 @@
  * 
  * @author Daniel Lienert <daniel@lienert.cc>
  */
-class Tx_Yag_Domain_Configuration_Image_SysImageConfigCollection extends tx_pttools_objectCollection {
+class Tx_Yag_Domain_Configuration_Image_SysImageConfigCollection extends Tx_PtExtbase_Collection_ObjectCollection {
 
 	/**
 	 * @var string

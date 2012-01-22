@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <knoll@punkt.de>
+*  (c) 2010-2011 Daniel Lienert <daniel@lienert.cc>, Michael Knoll <mimi@kaktsuteam.de>
 *  All rights reserved
 *
 *
@@ -95,7 +95,7 @@ class user_Tx_Yag_Utility_Flexform_TyposcriptDataProvider extends Tx_Yag_Utility
 	 */
 	protected function loadYagTyposcriptArray() {
 		if(is_null($this->yagTypoScript)) {
-			$extListTS = tx_pttools_div::typoscriptRegistry('plugin.tx_yag.', $this->currentPid);
+			$extListTS = Tx_PtExtbase_Div::typoscriptRegistry('plugin.tx_yag.', $this->currentPid);
 			$this->yagTypoScript =  Tx_Extbase_Utility_TypoScript::convertTypoScriptArrayToPlainArray($extListTS);
 		}
 	}

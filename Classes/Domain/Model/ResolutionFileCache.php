@@ -3,7 +3,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Michael Knoll <mimi@kaktusteam.de>
+*  (c) 2010-2011 Michael Knoll <mimi@kaktusteam.de>
 *  			Daniel Lienert <daniel@lienert.cc>
 *  			
 *  All rights reserved
@@ -74,7 +74,8 @@ class Tx_Yag_Domain_Model_ResolutionFileCache extends Tx_Extbase_DomainObject_Ab
      */
     protected $item;
     
-    
+
+
 	/**
      * Identifies this resolution
      *
@@ -82,7 +83,8 @@ class Tx_Yag_Domain_Model_ResolutionFileCache extends Tx_Extbase_DomainObject_Ab
      */
     protected $paramhash;
 	
-	
+
+
 	/**
 	 * Constructor for resolution item file relation
 	 *

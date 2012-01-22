@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Daniel Lienert <lienert@punkt.de>, Michael Knoll <knoll@punkt.de>
+*  (c) 2010-2011 Daniel Lienert <lienert@punkt.de>, Michael Knoll <mimi@kaktsuteam.de>
 *  All rights reserved
 *
 *
@@ -58,7 +58,7 @@ class Tx_Yag_Extlist_Filter_AlbumFilter extends Tx_PtExtlist_Domain_Model_Filter
 	protected function initFilterByGpVars() {}	
 	public function initFilterBySession() {}
 	public function persistToSession() {}
-	
+	public function getValue() {}
 	
 	
 	/**
@@ -97,7 +97,7 @@ class Tx_Yag_Extlist_Filter_AlbumFilter extends Tx_PtExtlist_Domain_Model_Filter
 	 * @see Classes/Domain/Model/Filter/Tx_PtExtlist_Domain_Model_Filter_AbstractFilter::setActiveState()
 	 */
 	public function setActiveState() {
-		if($this->albumUid) $this->isActive = true;
+		if($this->albumUid) $this->isActive = TRUE;
 	}
 	
 	

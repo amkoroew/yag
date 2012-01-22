@@ -107,7 +107,7 @@ class Tx_Yag_ViewHelpers_Javascript_TemplateViewHelper extends Tx_Fluid_Core_Vie
 	 * @param boolean $addToHead add to head section or return it a the place the viewhelper is  
 	 * @return string
 	 */
-	public function render($templatePath, $arguments = '', $addToHead = true ) {
+	public function render($templatePath, $arguments = '', $addToHead = TRUE ) {
 		
 		$absoluteFileName = t3lib_div::getFileAbsFileName($templatePath);
 		$this->addGenericArguments($arguments);
@@ -203,7 +203,9 @@ class Tx_Yag_ViewHelpers_Javascript_TemplateViewHelper extends Tx_Fluid_Core_Vie
 		preg_match_all($pattern, $jsCode ,$matches);
 		foreach($matches[0] as $match) {
 			$translateKey = substr($match,7,-3);
-			$markers[$match] = Tx_Extbase_Utility_Localization::translate($translateKey, $this->extKey); 
+			$translation = Tx_Extbase_Utility_Localization::translate($translateKey, $this->extKey);
+			$translation = $translation ? $translation : $translateKey;
+			$markers[$match] = $translation;
 		}
 	}
 	
