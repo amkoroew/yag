@@ -46,6 +46,10 @@
                                         <numIndex index="0">RandomSingle</numIndex>
                                         <numIndex index="1">Item->showRandomSingle</numIndex>
                                     </numIndex>
+                                    <numIndex index="8" type="array">
+                                        <numIndex index="0">Category</numIndex>
+                                        <numIndex index="1">Category->debug;Category->addNewCategory;Category->show;Category->getSubTree;Category->addCategory;Category->saveCategory;Category->removeCategory;Category->moveCategoryBefore;Category->moveCategoryAfter;Category->moveCategoryInto</numIndex>
+                                    </numIndex>
                                 </items>
                             </config>
                         </TCEforms>

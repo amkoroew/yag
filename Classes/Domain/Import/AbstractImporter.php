@@ -304,8 +304,8 @@ abstract class Tx_Yag_Domain_Import_AbstractImporter implements Tx_Yag_Domain_Im
         $this->importFileByFilename($origFilePath, $item);
         return $item;
     }
-    
-        
+
+
     
     /**
      * Creates a new item object and persists it

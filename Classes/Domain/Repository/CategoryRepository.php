@@ -65,23 +65,23 @@ class Tx_Yag_Domain_Repository_CategoryRepository
 	
 	
 	/**
-	 * Removes a category and its subcategories
+	 * Removes a node and its subcategories
 	 *
-	 * @param Tx_Yag_Domain_Model_Category $category Category to be removed
+	 * @param Tx_Yag_Domain_Model_Category $node Category to be removed
 	 */
-	public function remove($category) {
+	public function remove($node) {
 		
 		/*
 		 * WARNING Whenever this goes productive, we have to make sure, 
-		 * that the category table is write locked, while we
+		 * that the node table is write locked, while we
 		 * do the following three queries!
 		 */
 		
 		// We delete all database records that are no longer required
-		$this->deleteCategory($category);
+		$this->deleteCategory($node);
 		
 		// We update object structure
-		if (!$category->isRoot()) {
+		if (!$node->isRoot()) {
 			/**
 			 * What happens here:
 			 * 
@@ -92,15 +92,15 @@ class Tx_Yag_Domain_Repository_CategoryRepository
 			 * then the node we want to delete.
 			 * Afterwards, everything is fine again.
 			 */
-			$left = $category->getLft();
-			$right = $category->getRgt();
+			$left = $node->getLft();
+			$right = $node->getRgt();
 			$difference = intval($right - $left + 1);
 			
 			// We update case 1. from above
 			$query1 = "UPDATE tx_yag_domain_model_category " . 
 			          "SET lft = lft - " . $difference . ", rgt = rgt - " . $difference . " " . 
-			          "WHERE root = " . $category->getRoot() . " " .
-			          "AND lft > " . $category->getLft();
+			          "WHERE root = " . $node->getRoot() . " " .
+			          "AND lft > " . $node->getLft();
 			#echo "Update 1: " . $query1;
             $extQuery1 = $this->createQuery();
             $extQuery1->getQuerySettings()->setReturnRawQueryResult(true); // Extbase WTF
@@ -109,9 +109,9 @@ class Tx_Yag_Domain_Repository_CategoryRepository
 			// We update case 2. from above
 			$query2 = "UPDATE tx_yag_domain_model_category " . 
 			          "SET rgt = rgt - " . $difference . " " .
-			          "WHERE root = " . $category->getRoot() . " " .
-			          "AND lft < " . $category->getLft() . " " .
-			          "AND rgt > " . $category->getRgt();
+			          "WHERE root = " . $node->getRoot() . " " .
+			          "AND lft < " . $node->getLft() . " " .
+			          "AND rgt > " . $node->getRgt();
 			#echo "Update 2: " . $query2;
             $extQuery2 = $this->createQuery();
             $extQuery2->getQuerySettings()->setReturnRawQueryResult(true); // Extbase WTF
@@ -122,7 +122,7 @@ class Tx_Yag_Domain_Repository_CategoryRepository
 	
 	
 	/**
-	 * Hard-deletes a category and its subcategories from database.
+	 * Hard-deletes a node and its subcategories from database.
 	 * No deleted=1 is set, categories are really deleted!
 	 *
 	 * @param Tx_Yag_Domain_Model_Category $category

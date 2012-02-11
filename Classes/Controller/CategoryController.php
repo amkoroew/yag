@@ -270,5 +270,4 @@ class Tx_Yag_Controller_CategoryController extends Tx_Yag_Controller_AbstractCon
 	}
 	
 }
-
 ?>
